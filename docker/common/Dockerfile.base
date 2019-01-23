@@ -1,0 +1,108 @@
+#
+# Install ROS packages used by Autoware.
+#
+ARG ROS_DISTRO=kinetic
+FROM ros:${ROS_DISTRO} as ros
+
+RUN apt-get update && apt-get install -y \
+        ros-kinetic-automotive-platform-msgs \
+        ros-kinetic-controller-manager \
+        ros-kinetic-desktop-full \
+        ros-kinetic-gazebo-ros-control \
+        ros-kinetic-gps-common \
+        ros-kinetic-grid-map \
+        ros-kinetic-gscam \
+        ros-kinetic-imu-filter-madgwick \
+        ros-kinetic-imu-tools \
+        ros-kinetic-joystick-drivers \
+        ros-kinetic-jsk-visualization \
+        ros-kinetic-nmea-msgs \
+        ros-kinetic-nmea-navsat-driver \
+        ros-kinetic-rosbridge-server \
+        ros-kinetic-ros-control \
+        ros-kinetic-ros-controllers \
+        ros-kinetic-sound-play \
+        && rm -rf /var/lib/apt/lists/*
+#
+# Install tools and libraries required by Autoware
+#
+FROM ros as dependencies
+
+# Development
+RUN apt-get update && apt-get install -y \
+        cmake-curses-gui \
+        cmake-qt-gui \
+        gnome-terminal \
+        tmux \
+        vim \
+        wget \
+        v4l-utils \
+        gstreamer0.10-plugins-good \
+        libopencv-dev \
+        libgoogle-glog-dev \
+        libopenni2-dev \
+        libgflags-dev \
+        libgsl0-dev \
+        libgoogle-perftools-dev \
+        libssh2-1-dev \
+        libarmadillo-dev \
+        libpcap-dev \
+        libglew-dev \
+        libmosquitto-dev \
+        python-flask \
+        python-requests \
+        locales \
+        dbus-x11 \
+        pulseaudio \
+        dmz-cursor-theme \
+        fonts-dejavu \
+        libcanberra-gtk3-0 \
+        libcanberra-gtk-module \
+        libcanberra-gtk3-module \
+        libdbus-glib-1-2 \
+        language-pack-en \
+        && rm -rf /var/lib/apt/lists/*
+
+#
+# Configure environmet
+#
+FROM dependencies
+
+RUN update-locale LANG=en_US.UTF-8 LC_MESSAGES=POSIX
+
+# Add user
+ENV USERNAME autoware
+ARG user_id=1000
+ENV PULSE_SERVER /run/pulse/native
+
+RUN useradd -m $USERNAME && \
+        echo "$USERNAME:$USERNAME" | chpasswd && \
+        usermod --shell /bin/bash $USERNAME && \
+        usermod -aG sudo $USERNAME && \
+        echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/$USERNAME && \
+        chmod 0440 /etc/sudoers.d/$USERNAME && \
+        usermod  --uid $user_id $USERNAME && \
+        groupmod --gid $user_id $USERNAME
+
+# Startup scripts
+ENV LANG="en_US.UTF-8"
+RUN sudo echo "source /opt/ros/kinetic/setup.bash" >> /etc/profile.d/ros.sh && \
+        # Fix for qt and X server errors
+        sudo echo "export QT_X11_NO_MITSHM=1" >> /etc/profile.d/autoware.sh && \
+        # Set defaut language
+        sudo echo "export LANG=\"en_US.UTF-8\"" >> /etc/profile.d/autoware.sh && \
+        # cd to home on login
+        sudo echo "cd" >> /etc/profile.d/autoware.sh
+
+# Change user
+USER autoware
+
+RUN sudo rosdep fix-permissions && \
+        rosdep update
+
+# Change Terminal Color
+RUN gconftool-2 --set "/apps/gnome-terminal/profiles/Default/use_theme_background" --type bool false
+RUN gconftool-2 --set "/apps/gnome-terminal/profiles/Default/use_theme_colors" --type bool false
+RUN gconftool-2 --set "/apps/gnome-terminal/profiles/Default/background_color" --type string "#000000"
+
+CMD ["bash"]

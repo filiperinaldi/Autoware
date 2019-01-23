@@ -10,7 +10,9 @@ HOST_DIR=/home/$USER/shared_dir
 DOCKER_HUB_REPO="autoware/autoware"
 TAG="latest-kinetic"
 
-while getopts ":ht:r:s:" opt; do
+NVIDIA_DOCKER_RUNTIME=--runtime=nvidia
+
+while getopts ":ht:r:s:n" opt; do
   case $opt in
     h)
       usage
@@ -29,6 +31,10 @@ while getopts ":ht:r:s:" opt; do
       echo "Invalid option: -$OPTARG" >&2
       exit 1
       ;;
+    n)
+      echo "Disabled Docker Nvidia support (running without Cuda access)"
+      NVIDIA_DOCKER_RUNTIME=""
+      ;;
     :)
       echo "Option -$OPTARG requires an argument." >&2
       exit 1
@@ -39,7 +45,8 @@ done
 echo "Using $DOCKER_HUB_REPO:$TAG"
 echo "Shared directory: ${HOST_DIR}"
 
-nvidia-docker run \
+docker run \
+    ${NVIDIA_DOCKER_RUNTIME} \
     -it --rm \
     --volume=$XSOCK:$XSOCK:rw \
     --volume=$XAUTH:$XAUTH:rw \

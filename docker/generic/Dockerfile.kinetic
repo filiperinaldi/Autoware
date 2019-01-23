@@ -1,4 +1,5 @@
-FROM nvidia/cuda:9.0-devel-ubuntu16.04
+ARG docker_base_image=nvidia/cuda:9.0-devel-ubuntu16.04
+FROM ${docker_base_image}
 MAINTAINER Yuki Iida <yuki.iida@tier4.jp>
 
 # Develop

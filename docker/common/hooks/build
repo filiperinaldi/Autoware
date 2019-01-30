@@ -1,0 +1,21 @@
+#!/bin/bash
+
+. ./hooks/env
+
+# $IMAGE_NAME var is injected into the build so the tag is correct.
+echo "[***] Build hook running"
+
+
+# Build cpu dependencies
+BASE_CPU=$IMAGE_NAME:$TAG_PREFFIX-$ROS_DISTRO-base
+docker build -t $BASE_CPU -f ./../Dockerfile.cpu.kinetic_dependencies ./../..
+
+# Build cuda dependencies
+docker build -t $BASE-cuda --build-arg FROM_ARG=$BASE_CPU -f ./../Dockerfile.nvidia.dependencies ./../..
+BASE_CUDA=$BASE_CPU-cuda    
+
+# Build autoware-cpu
+docker build -t $IMAGE_NAME:$TAG-$ROS_DISTRO --build-arg FROM_ARG=$BASE_CPU -f ./../Dockerfile.autoware ./../..
+
+# Build autoware-cuda
+docker build -t $IMAGE_NAME:$TAG-$ROS_DISTRO --build-arg FROM_ARG=$BASE_CUDA -f ./../Dockerfile.autoware ./../..

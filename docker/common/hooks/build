@@ -9,13 +9,16 @@ echo "[***] Build hook running"
 # Build cpu dependencies
 BASE_CPU=$IMAGE_NAME:$TAG_PREFFIX-$ROS_DISTRO-base
 docker build -t $BASE_CPU -f ./../Dockerfile.cpu.kinetic_dependencies ./../..
+docker push $BASE_CPU
 
 # Build cuda dependencies
 docker build -t $BASE-cuda --build-arg FROM_ARG=$BASE_CPU -f ./../Dockerfile.nvidia.dependencies ./../..
 BASE_CUDA=$BASE_CPU-cuda    
+docker push $BASE_CUDA
 
 # Build autoware-cpu
 docker build -t $IMAGE_NAME:$TAG-$ROS_DISTRO --build-arg FROM_ARG=$BASE_CPU -f ./../Dockerfile.autoware ./../..
+docker push $IMAGE_NAME:$TAG-$ROS_DISTRO
 
 # Build autoware-cuda
-docker build -t $IMAGE_NAME:$TAG-$ROS_DISTRO --build-arg FROM_ARG=$BASE_CUDA -f ./../Dockerfile.autoware ./../..
+#docker build -t $IMAGE_NAME:$TAG-$ROS_DISTRO --build-arg FROM_ARG=$BASE_CUDA -f ./../Dockerfile.autoware ./../..

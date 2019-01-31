@@ -1,6 +1,9 @@
 #!/bin/bash
 
-usage() { echo "Usage: $0 [-i <image name>] [--cuda <on|ON|off|OFF>]" 1>&2; exit 1; }
+function usage() {
+    echo "Usage: $0 [-i <image name>] [--cuda <on|ON|off|OFF>]" 1>&2
+    exit 1
+}
 
 # Defaults
 CUDA="on"
@@ -8,7 +11,9 @@ IMAGE_NAME="autoware/autoware"
 TAG_PREFFIX="local"
 ROS_DISTRO="kinetic"
 
-OPTS=`getopt --options c:hi:t: --long cuda:,help,image-name:,tag-preffix: --name "$0" -- "$@"`
+OPTS=`getopt --options c:hi:t: \
+	     --long cuda:,help,image-name:,tag-preffix: \
+	     --name "$0" -- "$@"`
 eval set -- "$OPTS"
 
 while true; do
@@ -48,7 +53,6 @@ while true; do
 done
 
 echo "Building image $IMAGE_NAME using tag_preffix $TAG_PREFFIX, cuda $CUDA, ros $ROS_DISTRO"
-sleep 5
 
 BASE=$IMAGE_NAME:$TAG_PREFFIX-$ROS_DISTRO-base
 

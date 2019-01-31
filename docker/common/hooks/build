@@ -5,7 +5,6 @@
 # $IMAGE_NAME var is injected into the build so the tag is correct.
 echo "[***] Build hook running"
 
-
 # Build cpu dependencies
 BASE_CPU=$IMAGE_NAME-$ROS_DISTRO-base
 docker build -t $BASE_CPU -f ./../Dockerfile.cpu.kinetic_dependencies ./../..

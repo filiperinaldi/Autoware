@@ -21,4 +21,4 @@ docker build -t $IMAGE_NAME-$ROS_DISTRO --build-arg FROM_ARG=$BASE_CPU -f ./../D
 docker push $IMAGE_NAME-$ROS_DISTRO
 
 # Build autoware-cuda
-#docker build -t $IMAGE_NAME-$ROS_DISTRO --build-arg FROM_ARG=$BASE_CUDA -f ./../Dockerfile.autoware ./../..
+docker build -t $IMAGE_NAME-$ROS_DISTRO-cuda --build-arg FROM_ARG=$BASE_CUDA -f ./../Dockerfile.autoware ./../..

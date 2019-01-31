@@ -2,6 +2,8 @@ ARG FROM_ARG
 FROM ${FROM_ARG}
 USER root
 
+# From nvidia cuda 9.0 base: https://gitlab.com/nvidia/cuda/tree/ubuntu16.04/9.0/base/Dockerfile
+
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates apt-transport-https gnupg-curl && \
     rm -rf /var/lib/apt/lists/* && \
     NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
@@ -32,15 +34,18 @@ ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 ENV NVIDIA_REQUIRE_CUDA "cuda>=9.0"
 
 
+# From nvidia cuda 9.0 runtime: https://gitlab.com/nvidia/cuda/blob/ubuntu16.04/9.0/runtime/Dockerfile
+
 ENV NCCL_VERSION 2.3.7
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         cuda-libraries-$CUDA_PKG_VERSION \
         cuda-cublas-9-0=9.0.176.4-1 \
         libnccl2=$NCCL_VERSION-1+cuda9.0 && \
-    apt-mark hold libnccl2 && \
-    rm -rf /var/lib/apt/lists/*
+        apt-mark hold libnccl2 && \
+        rm -rf /var/lib/apt/lists/*
 
+# From nvidia cuda 9.0 devel: https://gitlab.com/nvidia/cuda/blob/ubuntu16.04/9.0/devel/Dockerfile
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         cuda-libraries-dev-$CUDA_PKG_VERSION \
@@ -54,7 +59,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs
 
-
+# Support for Nvidia docker v2
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         pkg-config \
@@ -80,4 +85,7 @@ ENV NVIDIA_VISIBLE_DEVICES \
     ${NVIDIA_VISIBLE_DEVICES:-all}
 ENV NVIDIA_DRIVER_CAPABILITIES \
     ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
+    
 USER autoware
+
+CMD ["bash"]

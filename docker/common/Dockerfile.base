@@ -1,8 +1,8 @@
 #
 # Install ROS packages used by Autoware.
 #
-ARG ROS_BASE=ros:kinetic
-FROM ${ROS_BASE} as ros
+ARG ROS_DISTRO=kinetic
+FROM ros:${ROS_DISTRO} as ros
 
 RUN apt-get update && apt-get install -y \
         ros-kinetic-automotive-platform-msgs \

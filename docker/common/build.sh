@@ -52,11 +52,11 @@ sleep 5
 
 BASE=$IMAGE_NAME:$TAG_PREFFIX-$ROS_DISTRO-base
 
-docker build -t $BASE -f Dockerfile.cpu.kinetic_dependencies ./../..
+docker build -t $BASE -f Dockerfile.base ./../..
 
 if [ $CUDA = "on" ] || [ $CUDA = "ON" ] ; then
-    docker build -t $BASE-cuda --build-arg FROM_ARG=$BASE -f Dockerfile.nvidia.dependencies ./../..
+    docker build -t $BASE-cuda --build-arg FROM_ARG=$BASE -f Dockerfile.cuda ./../..
 	BASE=$BASE-cuda    
 fi
 
-docker build -t $IMAGE_NAME:$TAG_PREFFIX-$ROS_DISTRO --build-arg FROM_ARG=$BASE -f Dockerfile.autoware ./../..
+docker build -t $IMAGE_NAME:$TAG_PREFFIX-$ROS_DISTRO --build-arg FROM_ARG=$BASE -f Dockerfile ./../..

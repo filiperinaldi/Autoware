@@ -1,28 +1,43 @@
 #!/bin/bash
 
+# Default settings
+CUDA="on"
+IMAGE_NAME="autoware/autoware"
+TAG_PREFIX="local"
+ROS_DISTRO="kinetic"
+BASE_ONLY="false"
+
 function usage() {
-    echo "Usage: $0 [-i <image name>] [--cuda <on|ON|off|OFF>]" 1>&2
+    echo "Usage: $0 [OPTIONS]"
+    echo "    -b,--base-only        Build the base image(s) only."
+    echo "                          Default:$BASE_ONLY"
+    echo "    -c,--cuda <on|off>    Enable Cuda support in the Docker."
+    echo "                          Default:$CUDA"
+    echo "    -h, --help            Display the usage and exit."
+    echo "    -i,--image <name>     Set docker images name."
+    echo "                          Default:$IMAGE_NAME"
+    echo "    -t,--tag-prefix <tag> Tag prefix use for the docker images."
+    echo "                          Default:$TAG_PREFIX"
     exit 1
 }
 
-# Defaults
-CUDA="on"
-IMAGE_NAME="autoware/autoware"
-TAG_PREFFIX="local"
-ROS_DISTRO="kinetic"
-
-OPTS=`getopt --options c:hi:t: \
-	     --long cuda:,help,image-name:,tag-preffix: \
-	     --name "$0" -- "$@"`
+OPTS=`getopt --options bc:hi:t: \
+         --long base-only,cuda:,help,image-name:,tag-prefix: \
+         --name "$0" -- "$@"`
 eval set -- "$OPTS"
 
 while true; do
   case $1 in
-  	-c|--cuda)
-  	  case "$2" in 
-  	  	"on"|"off"|"ON"|"OFF") CUDA="$2" ;;
-        *) echo "Invalid option: $2"; exit 1 ;;
-  	  esac
+    -b|--base-only)
+      BASE_ONLY="true"
+      shift 1
+      ;;
+    -c|--cuda)
+      param=$(echo $2 | tr '[:upper:]' '[:lower:]')
+      case "${param}" in
+        "on"|"off") CUDA="${param}" ;;
+        *) echo "Invalid cuda option: $2"; exit 1 ;;
+      esac
       shift 2
       ;;
     -h|--help)
@@ -33,16 +48,16 @@ while true; do
       IMAGE_NAME="$2"
       shift 2
       ;;
-	-t|--tag-preffix)
-      TAG_PREFFIX="$2"
+    -t|--tag-prefix)
+      TAG_PREFIX="$2"
       shift 2
       ;;
     --)
-      if [ ! -z $2 ]; 
+      if [ ! -z $2 ];
       then
-      	echo "Invalid parameter: $2"
-      	exit 1
- 	  fi
+        echo "Invalid parameter: $2"
+        exit 1
+      fi
       break
       ;;
     *)
@@ -52,15 +67,34 @@ while true; do
   esac
 done
 
-echo "Building image $IMAGE_NAME using tag_preffix $TAG_PREFFIX, cuda $CUDA, ros $ROS_DISTRO"
+echo "Using options:"
+echo -e "\tROS distro: $ROS_DISTRO"
+echo -e "\tImage name: $IMAGE_NAME"
+echo -e "\tTag prefix: $TAG_PREFIX"
+echo -e "\tCuda support: $CUDA"
+echo -e "\tBase only: $BASE_ONLY"
 
-BASE=$IMAGE_NAME:$TAG_PREFFIX-$ROS_DISTRO-base
+BASE=$IMAGE_NAME:$TAG_PREFIX-$ROS_DISTRO-base
 
-docker build -t $BASE -f Dockerfile.base ./../..
+docker build \
+    --tag $BASE \
+    --file Dockerfile.base .
 
-if [ $CUDA = "on" ] || [ $CUDA = "ON" ] ; then
-    docker build -t $BASE-cuda --build-arg FROM_ARG=$BASE -f Dockerfile.cuda ./../..
-	BASE=$BASE-cuda    
+CUDA_SUFFIX=""
+if [ $CUDA == "on" ]; then
+    CUDA_SUFFIX="-cuda"
+    docker build \
+        --tag $BASE$CUDA_SUFFIX \
+        --build-arg FROM_ARG=$BASE \
+        --file Dockerfile.cuda .
 fi
 
-docker build -t $IMAGE_NAME:$TAG_PREFFIX-$ROS_DISTRO --build-arg FROM_ARG=$BASE -f Dockerfile ./../..
+if [ "$BASE_ONLY" == "true" ]; then
+    echo "Finished building the base image(s) only."
+    exit 0
+fi
+
+docker build \
+    --tag $IMAGE_NAME:$TAG_PREFIX-$ROS_DISTRO$CUDA_SUFFIX \
+    --build-arg FROM_ARG=$BASE$CUDA_SUFFIX \
+    --file Dockerfile ./../..

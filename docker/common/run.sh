@@ -9,11 +9,11 @@ BASE_ONLY="false"
 
 function usage() {
     echo "Usage: $0 [OPTIONS]"
-    echo "    -b,--base-only        Build the base image(s) only."
+    echo "    -b,--base-only        Run the base image only."
     echo "                          Default:$BASE_ONLY"
     echo "    -c,--cuda <on|off>    Enable Cuda support in the Docker."
     echo "                          Default:$CUDA"
-    echo "    -h, --help            Display the usage and exit."
+    echo "    -h,--help             Display the usage and exit."
     echo "    -i,--image <name>     Set docker images name."
     echo "                          Default:$IMAGE_NAME"
     echo "    -t,--tag-prefix <tag> Tag prefix use for the docker images."
@@ -73,27 +73,36 @@ echo -e "\tTag prefix: $TAG_PREFIX"
 echo -e "\tCuda support: $CUDA"
 echo -e "\tBase only: $BASE_ONLY"
 
-BASE=$IMAGE_NAME:$TAG_PREFIX-$ROS_DISTRO-base
 
-docker build \
-    --tag $BASE \
-    --file Dockerfile.base .
-
-CUDA_SUFFIX=""
-if [ $CUDA == "on" ]; then
-    CUDA_SUFFIX="-cuda"
-    docker build \
-        --tag $BASE$CUDA_SUFFIX \
-        --build-arg FROM_ARG=$BASE \
-        --file Dockerfile.cuda .
-fi
+SUFFIX=""
+RUNTIME=""
 
 if [ "$BASE_ONLY" == "true" ]; then
-    echo "Finished building the base image(s) only."
-    exit 0
+    SUFFIX=$SUFFIX"-base"
 fi
 
-docker build \
-    --tag $IMAGE_NAME:$TAG_PREFIX-$ROS_DISTRO$CUDA_SUFFIX \
-    --build-arg FROM_ARG=$BASE$CUDA_SUFFIX \
-    --file Dockerfile ./../..
+if [ $CUDA == "on" ]; then
+    SUFFIX=$SUFFIX"-cuda"
+    RUNTIME="--runtime=nvidia"
+fi
+
+IMAGE=$IMAGE_NAME:$TAG_PREFIX-$ROS_DISTRO$SUFFIX
+echo "Launching $IMAGE"
+
+XSOCK=/tmp/.X11-unix
+XAUTH=/home/$USER/.Xauthority
+SHARED_DIR=/home/autoware/shared_dir
+HOST_DIR=/home/$USER/shared_dir
+
+docker run \
+    -it --rm \
+    --volume=$XSOCK:$XSOCK:rw \
+    --volume=$XAUTH:$XAUTH:rw \
+    --volume=$HOST_DIR:$SHARED_DIR:rw \
+    --env="XAUTHORITY=${XAUTH}" \
+    --env="DISPLAY=${DISPLAY}" \
+    -u autoware \
+    --privileged -v /dev/bus/usb:/dev/bus/usb \
+    --net=host \
+    $RUNTIME \
+    $IMAGE

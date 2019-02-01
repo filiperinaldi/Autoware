@@ -47,7 +47,6 @@ RUN apt-get update && apt-get install -y \
         libssh2-1-dev \
         libarmadillo-dev \
         libpcap-dev \
-        gksu \
         libglew-dev \
         libmosquitto-dev \
         python-flask \

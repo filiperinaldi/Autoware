@@ -8,7 +8,7 @@ RUN apt-get update
 RUN cd && mkdir -p /home/Autoware/ros
 COPY ./ /home/Autoware/ros
 RUN rosdep install -y --from-paths /home/Autoware/ros/src --ignore-src
-RUN rm -rf /home/Autoware
+RUN rm -rf /home/Autoware  # Removed for clean environment
 
 # Install tools and libraries required by Autoware
 #

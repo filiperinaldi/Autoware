@@ -77,8 +77,20 @@ echo -e "\tBase only: $BASE_ONLY"
 SUFFIX=""
 RUNTIME=""
 
+XSOCK=/tmp/.X11-unix
+XAUTH=/home/$USER/.Xauthority
+SHARED_DIR=/home/autoware/shared_dir
+HOST_DIR=/home/$USER/shared_dir
+AUTOWARE_HOST_DIR=/home/$USER/Autoware
+AUTOWARE_DOCKER_DIR=/home/autoware/Autoware
+
+VOLUMES="--volume=$XSOCK:$XSOCK:rw 
+         --volume=$XAUTH:$XAUTH:rw 
+         --volume=$HOST_DIR:$SHARED_DIR:rw"
+
 if [ "$BASE_ONLY" == "true" ]; then
     SUFFIX=$SUFFIX"-base"
+    VOLUMES="$VOLUMES --volume=$AUTOWARE_HOST_DIR:$AUTOWARE_DOCKER_DIR "
 fi
 
 if [ $CUDA == "on" ]; then
@@ -89,16 +101,9 @@ fi
 IMAGE=$IMAGE_NAME:$TAG_PREFIX-$ROS_DISTRO$SUFFIX
 echo "Launching $IMAGE"
 
-XSOCK=/tmp/.X11-unix
-XAUTH=/home/$USER/.Xauthority
-SHARED_DIR=/home/autoware/shared_dir
-HOST_DIR=/home/$USER/shared_dir
-
 docker run \
     -it --rm \
-    --volume=$XSOCK:$XSOCK:rw \
-    --volume=$XAUTH:$XAUTH:rw \
-    --volume=$HOST_DIR:$SHARED_DIR:rw \
+    $VOLUMES \
     --env="XAUTHORITY=${XAUTH}" \
     --env="DISPLAY=${DISPLAY}" \
     -u autoware \

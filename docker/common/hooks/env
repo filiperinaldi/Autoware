@@ -1,8 +1,12 @@
-#[ -n "$SOURCE_BRANCH" ]  || SOURCE_BRANCH=$(git symbolic-ref -q --short HEAD)
-#[ -n "$GIT_SHA1" ]       || GIT_SHA1=$(git rev-parse -q HEAD)
- 
+[ -n "$SOURCE_BRANCH" ]  || SOURCE_BRANCH=$(git symbolic-ref -q --short HEAD)
+[ -n "$GIT_SHA1" ]       || GIT_SHA1=$(git rev-parse -q HEAD)
+
+# $IMAGE_NAME of type XXX-ROS_DISTRO-cuda | XXX-ROS_DISTRO-cuda-rc
+
+BASE=${IMAGE_NAME:0: -5}-base #remove '-cuda' from $IMAGE_NAME string
 if [[ "${SOURCE_BRANCH}" =~ "release/" ]]; then
-  TAG=${SOURCE_BRANCH:8}
+  BASE=${IMAGE_NAME:0: -8}-base #remove '-cuda-rc' from $IMAGE_NAME string
 fi
 
+BASE_CUDA=$BASE-cuda
 ROS_DISTRO=kinetic

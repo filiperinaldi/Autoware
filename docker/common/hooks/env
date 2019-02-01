@@ -9,4 +9,5 @@ if [[ "${SOURCE_BRANCH}" =~ "release/" ]]; then
 fi
 
 BASE_CUDA=$BASE-cuda
+
 ROS_DISTRO=kinetic

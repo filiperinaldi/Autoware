@@ -13,7 +13,7 @@ function usage() {
     echo "                          Default:$BASE_ONLY"
     echo "    -c,--cuda <on|off>    Enable Cuda support in the Docker."
     echo "                          Default:$CUDA"
-    echo "    -h,--help             Display the usage and exit."
+    echo "    -h, --help            Display the usage and exit."
     echo "    -i,--image <name>     Set docker images name."
     echo "                          Default:$IMAGE_NAME"
     echo "    -t,--tag-prefix <tag> Tag prefix use for the docker images."

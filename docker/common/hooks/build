@@ -6,18 +6,12 @@
 echo "[***] Build hook running"
 
 # Build cpu dependencies
-BASE_CPU=$IMAGE_NAME-$ROS_DISTRO-base
-docker build -t $BASE_CPU -f ./../Dockerfile.cpu.kinetic_dependencies ./../..
-docker push $BASE_CPU
+docker build -t $BASE -f Dockerfile.base ./../..
+docker push $BASE
 
 # Build cuda dependencies
-docker build -t $BASE-cuda --build-arg FROM_ARG=$BASE_CPU -f ./../Dockerfile.nvidia.dependencies ./../..
-BASE_CUDA=$BASE_CPU-cuda    
+docker build -t $BASE_CUDA --build-arg FROM_ARG=$BASE -f Dockerfile.cuda .
 docker push $BASE_CUDA
 
-# Build autoware-cpu
-docker build -t $IMAGE_NAME-$ROS_DISTRO --build-arg FROM_ARG=$BASE_CPU -f ./../Dockerfile.autoware ./../..
-docker push $IMAGE_NAME-$ROS_DISTRO
-
 # Build autoware-cuda
-docker build -t $IMAGE_NAME-$ROS_DISTRO-cuda --build-arg FROM_ARG=$BASE_CUDA -f ./../Dockerfile.autoware ./../..
+docker build -t $IMAGE_NAME --build-arg FROM_ARG=$BASE_CUDA -f Dockerfile ./../..

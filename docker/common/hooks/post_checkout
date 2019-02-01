@@ -3,7 +3,7 @@
 . ./hooks/env
 
 # $IMAGE_NAME var is injected into the build so the tag is correct.
-echo "[***] Build hook running"
+echo "[***] Post checkout hook running"
 
 # Build cpu dependencies
 BASE=$IMAGE_NAME-$ROS_DISTRO-base
@@ -16,8 +16,8 @@ BASE_CUDA=$BASE-cuda
 #docker push $BASE_CUDA
 
 # Build autoware-cpu
-docker build -t $IMAGE_NAME-$ROS_DISTRO --build-arg FROM_ARG=$BASE -f Dockerfile ./../..
-docker push $IMAGE_NAME-$ROS_DISTRO
+#docker build -t $IMAGE_NAME-$ROS_DISTRO --build-arg FROM_ARG=$BASE -f Dockerfile ./../..
+#docker push $IMAGE_NAME-$ROS_DISTRO
 
 # Build autoware-cuda
-docker build -t $IMAGE_NAME-$ROS_DISTRO-cuda --build-arg FROM_ARG=$BASE_CUDA -f Dockerfile ./../..
+#docker build -t $IMAGE_NAME-$ROS_DISTRO-cuda --build-arg FROM_ARG=$BASE_CUDA -f Dockerfile ./../..

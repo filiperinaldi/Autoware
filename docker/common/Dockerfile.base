@@ -4,26 +4,12 @@
 ARG ROS_DISTRO=kinetic
 FROM ros:${ROS_DISTRO} as ros
 
-RUN apt-get update && apt-get install -y \
-        ros-kinetic-automotive-platform-msgs \
-        ros-kinetic-controller-manager \
-        ros-kinetic-desktop-full \
-        ros-kinetic-gazebo-ros-control \
-        ros-kinetic-gps-common \
-        ros-kinetic-grid-map \
-        ros-kinetic-gscam \
-        ros-kinetic-imu-filter-madgwick \
-        ros-kinetic-imu-tools \
-        ros-kinetic-joystick-drivers \
-        ros-kinetic-jsk-visualization \
-        ros-kinetic-nmea-msgs \
-        ros-kinetic-nmea-navsat-driver \
-        ros-kinetic-rosbridge-server \
-        ros-kinetic-ros-control \
-        ros-kinetic-ros-controllers \
-        ros-kinetic-sound-play \
-        && rm -rf /var/lib/apt/lists/*
-#
+RUN apt-get update
+RUN cd && mkdir -p /home/Autoware/ros
+COPY ./ /home/Autoware/ros
+RUN rosdep install -y --from-paths /home/Autoware/ros/src --ignore-src
+RUN rm -rf /home/Autoware
+
 # Install tools and libraries required by Autoware
 #
 FROM ros as dependencies

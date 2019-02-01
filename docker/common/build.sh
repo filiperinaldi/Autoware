@@ -77,7 +77,7 @@ BASE=$IMAGE_NAME:$TAG_PREFIX-$ROS_DISTRO-base
 
 docker build \
     --tag $BASE \
-    --file Dockerfile.base .
+    --file Dockerfile.base ./../../ros
 
 CUDA_SUFFIX=""
 if [ $CUDA == "on" ]; then

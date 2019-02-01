@@ -10,6 +10,10 @@ COPY ./ /home/Autoware/ros
 RUN rosdep install -y --from-paths /home/Autoware/ros/src --ignore-src
 RUN rm -rf /home/Autoware  # Removed for clean environment
 
+RUN apt-get update && apt-get install -y \
+        ros-kinetic-desktop-full \
+        && rm -rf /var/lib/apt/lists/*
+
 # Install tools and libraries required by Autoware
 #
 FROM ros as dependencies

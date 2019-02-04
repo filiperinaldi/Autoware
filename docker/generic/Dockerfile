@@ -14,5 +14,8 @@ RUN /bin/bash -c 'source /opt/ros/kinetic/setup.bash; \
                   ./catkin_make_release'
 RUN echo "source /home/$USERNAME/Autoware/ros/devel/setup.bash" >> /home/$USERNAME/.bashrc
 
+# Set working directory to /home
+WORKDIR /home/$USERNAME
+
 # Default CMD
 CMD ["/bin/bash"]

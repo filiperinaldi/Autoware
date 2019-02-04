@@ -96,4 +96,7 @@ RUN gconftool-2 --set "/apps/gnome-terminal/profiles/Default/use_theme_backgroun
 RUN gconftool-2 --set "/apps/gnome-terminal/profiles/Default/use_theme_colors" --type bool false
 RUN gconftool-2 --set "/apps/gnome-terminal/profiles/Default/background_color" --type string "#000000"
 
-CMD ["bash"]
+# Set working directory to /home
+WORKDIR /home/$USERNAME
+
+CMD ["/bin/bash"]

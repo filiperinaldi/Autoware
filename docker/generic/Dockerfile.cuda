@@ -88,4 +88,8 @@ ENV NVIDIA_DRIVER_CAPABILITIES \
     ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
 
 USER autoware
-CMD ["bash"]
+
+# Set working directory to /home
+WORKDIR /home/$USERNAME
+
+CMD ["/bin/bash"]

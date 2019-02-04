@@ -108,7 +108,7 @@ fi
 
 if [ $CUDA == "on" ]; then
     SUFFIX=$SUFFIX"-cuda"
-    RUNTIME=""
+    RUNTIME="--runtime nvidia"
 fi
 
 if [ $PRE_RELEASE == "on" ]; then

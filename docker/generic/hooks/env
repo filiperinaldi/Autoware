@@ -5,9 +5,11 @@
 
 BASE=${IMAGE_NAME:0: -5}-base #remove '-cuda' from $IMAGE_NAME string
 BASE_CUDA=$BASE-cuda
+LATEST_TAG="ON"
 if [[ "${SOURCE_BRANCH}" =~ "release/" ]]; then
   BASE=${IMAGE_NAME:0: -8}-base-rc #remove '-cuda-rc' from $IMAGE_NAME string
   BASE_CUDA=$BASE-cuda-rc
+  LATEST_TAG="OFF"
 fi
 
 ROS_DISTRO=kinetic

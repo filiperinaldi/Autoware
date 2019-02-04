@@ -8,6 +8,8 @@ set -e
 tagStart=$(expr index "$IMAGE_NAME" :)
 repoName=${IMAGE_NAME:0:tagStart-1}
 
-# Tag and push image for latest tag
-docker tag $IMAGE_NAME ${repoName}:latest-$ROS_DISTRO-cuda
-docker push ${repoName}:latest-$ROS_DISTRO-cuda
+if [[ "${LATEST_TAG}" =~ "ON" ]]; then
+  # Tag and push image for latest tag
+  docker tag $IMAGE_NAME ${repoName}:latest-$ROS_DISTRO-cuda
+  docker push ${repoName}:latest-$ROS_DISTRO-cuda
+fi

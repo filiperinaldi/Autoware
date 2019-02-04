@@ -4,9 +4,8 @@
 ARG ROS_DISTRO=kinetic
 FROM ros:${ROS_DISTRO} as ros
 
-RUN cd && mkdir -p /home/Autoware/ros
-COPY ./ /home/Autoware/ros
-
+RUN cd && mkdir -p /home/Autoware
+COPY ./ /home/Autoware
 RUN apt-get update && \
         apt-get install -y ros-kinetic-desktop-full && \
         rosdep install -y --from-paths /home/Autoware/ros/src --ignore-src && \

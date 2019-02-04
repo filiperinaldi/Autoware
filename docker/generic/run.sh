@@ -108,7 +108,7 @@ fi
 
 if [ $CUDA == "on" ]; then
     SUFFIX=$SUFFIX"-cuda"
-    RUNTIME="--runtime=nvidia"
+    RUNTIME=""
 fi
 
 if [ $PRE_RELEASE == "on" ]; then
@@ -117,7 +117,7 @@ fi
 
 IMAGE=$IMAGE_NAME:$TAG_PREFIX-$ROS_DISTRO$SUFFIX
 echo "Launching $IMAGE"
-sleep 5
+
 docker run \
     -it --rm \
     $VOLUMES \

@@ -100,4 +100,6 @@ RUN gconftool-2 --set "/apps/gnome-terminal/profiles/Default/background_color" -
 # Set working directory to /home
 WORKDIR /home/$USERNAME
 
+RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /home/$USERNAME/.bashrc
+
 CMD ["/bin/bash"]

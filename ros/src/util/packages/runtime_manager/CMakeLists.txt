@@ -95,5 +95,3 @@ install(FILES
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch_files
         #DESTINATION share/${PROJECT_NAME}/launch_files
         )
-
-

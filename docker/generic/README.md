@@ -5,7 +5,7 @@ Docker can be used to allow developers to quickly get a development
 environment ready to try and develop Autoware.
 
 The main Docker images are:
-* Base image - Provides a container with all the dependencies to build and
+* Base image - Provides a development container with all the dependencies to build and
 run Autoware. When creating a container using this image, the Autoware
 source code is mounted as a volume allowing the user to develop and build
 Autoware.
@@ -46,6 +46,17 @@ available, try:
 ```
 ./run.sh --help
 ```
+
+The development images are run as:
+
+- `./run.sh -b` will run the base image with CUDA available. By default: _autoware/autoware:latest-kinetic-base-cuda_
+- `./run.sh -b -c off` will run the base image without CUDA. By default: _autoware/autoware:latest-kinetic-base_
+
+
+The following images are ready-availabe in [autoware/autoware](https://hub.docker.com/r/autoware/autoware):
+- latest-kinetic-base: development environment with pre-installed Autoware dependencies __without CUDA__ for the latest release of Autoware.
+- latest-kinetic-base-cuda: development environment with pre-installed Autoware dependencies __with CUDA__ for the latest release of Autoware.
+- latest-kinetic-cuda: pre-compiled Autoware __with CUDA__ for the latest release of Autoware.
 
 __Note__: The default values for the __--image__ and __--tag-prefix__
 parameters in build.sh and run.sh are different. This is because run.sh

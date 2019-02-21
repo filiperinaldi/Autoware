@@ -1,8 +1,15 @@
+ARG DOCKER_TARGET_ARCH
+ARG TARGET_ARCH
+FROM multiarch/alpine:${TARGET_ARCH}-latest-stable AS bootstrap
+
 #
 # Install ROS packages used by Autoware.
 #
 ARG ROS_DISTRO
-FROM ros:$ROS_DISTRO
+FROM ${DOCKER_TARGET_ARCH}/ros:kinetic AS sysroot
+
+ARG TARGET_ARCH
+COPY --from=bootstrap /usr/bin/qemu-${TARGET_ARCH}-static /usr/bin/qemu-${TARGET_ARCH}-static
 
 #
 # Install tools and libraries required by Autoware

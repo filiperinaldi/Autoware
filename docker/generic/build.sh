@@ -76,6 +76,7 @@ echo -e "\tBase only: $BASE_ONLY"
 BASE=$IMAGE_NAME:$TAG_PREFIX-$ROS_DISTRO-base
 
 docker build \
+	--rm \
     --tag $BASE \
     --build-arg ROS_DISTRO=$ROS_DISTRO \
     --file Dockerfile.base ./../..
@@ -84,6 +85,7 @@ CUDA_SUFFIX=""
 if [ $CUDA == "on" ]; then
     CUDA_SUFFIX="-cuda"
     docker build \
+		--rm \
         --tag $BASE$CUDA_SUFFIX \
         --build-arg FROM_ARG=$BASE \
         --file Dockerfile.cuda .
@@ -95,6 +97,7 @@ if [ "$BASE_ONLY" == "true" ]; then
 fi
 
 docker build \
+	--rm \
     --tag $IMAGE_NAME:$TAG_PREFIX-$ROS_DISTRO$CUDA_SUFFIX \
     --build-arg FROM_ARG=$BASE$CUDA_SUFFIX \
     --build-arg ROS_DISTRO=$ROS_DISTRO \

@@ -76,11 +76,10 @@ COPY --from=nvidia/opengl:1.0-glvnd-runtime-ubuntu16.04 \
 COPY --from=nvidia/opengl:1.0-glvnd-runtime-ubuntu16.04 \
   /usr/local/share/glvnd/egl_vendor.d/10_nvidia.json \
   /usr/local/share/glvnd/egl_vendor.d/10_nvidia.json
+RUN echo $LIB && sleep 5
 RUN echo '/usr/local/lib/x86_64-linux-gnu' >> /etc/ld.so.conf.d/glvnd.conf && \
-    ldconfig && \
-    echo '/usr/$LIB/libGL.so.1' >> /etc/ld.so.preload && \
-    echo '/usr/$LIB/libEGL.so.1' >> /etc/ld.so.preload
-RUN apt update
+    ldconfig
+RUN apt-get update
 # nvidia-container-runtime
 ENV NVIDIA_VISIBLE_DEVICES \
     ${NVIDIA_VISIBLE_DEVICES:-all}

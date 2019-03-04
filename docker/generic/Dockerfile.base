@@ -79,12 +79,11 @@ RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /etc/profile.d/ros.sh && \
 #
 # Scan Autoware packages to install dependencies
 #
-COPY ./ /tmp/Autoware
+COPY ./docker/generic/dependencies /dependencies
 RUN apt-get update && \
-        apt-get install -y ros-$ROS_DISTRO-desktop-full && \
-        rosdep install -y --from-paths /tmp/Autoware/ros/src --ignore-src && \
-        rm -rf /var/lib/apt/lists/* && \
-        rm -rf /tmp/Autoware  # Removed for clean environment
+	sed -i "s/\$ROS_DISTRO/$ROS_DISTRO/g" "dependencies" && \
+	cat dependencies | xargs sudo apt-get install -y && \
+    rm -rf /var/lib/apt/lists/* 
 
 RUN su -c "rosdep update" autoware
 
